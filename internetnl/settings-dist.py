@@ -33,7 +33,7 @@ check_if_environment_present()
 DEBUG = get_boolean_env("DEBUG", False)
 
 # # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = getenv("SECRET_KEY", "secret")
+SECRET_KEY = getenv("SECRET_KEY", "er2tre87%vg#")
 
 # # If Django is proxied (eg. webserver proxying to django/gunicorn) enable this setting.
 # # Make sure that the `X-Forwarded-For` and `X-Forwarded-Proto` HTTP headers;
