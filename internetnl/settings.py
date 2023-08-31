@@ -62,18 +62,29 @@ DB_USER = getenv("DB_USER", "internetnluser")
 DB_PASSWORD = getenv("DB_PASSWORD", "secret")
 DB_HOST = getenv("DB_HOST", "127.0.0.1")
 DB_PORT = int(getenv("DB_PORT", 5432))
+# From okapi: 'postgresql://okapi_prod_user:qXoip9ff8lUld2PtBlNQ@104.155.119.239:5432/internetnl'
+DJANGO_DATABASE = getenv("DJANGO_DATABASE", "default")
+DB_NAME = getenv("DB_NAME", "internetnl")
+DB_USER = getenv("DB_USER", "okapi_prod_user")
+DB_PASSWORD = getenv("DB_PASSWORD", "qXoip9ff8lUld2PtBlNQ")
+DB_HOST = getenv("DB_HOST", "104.155.119.239")
+DB_PORT = int(getenv("DB_PORT", 5432))
 
 # Infrastructure
 # # Celery
 CELERY_BROKER_URL = getenv("CELERY_BROKER_URL", "amqp://guest:guest@localhost:5672/")
 CELERY_RESULT_BACKEND = getenv("CELERY_RESULT_BACKEND", "redis://:S1t3k1ck!@localhost:6379/0")
 
+# Sitekick 'S1t3k1ck!@prod-db-001.sitekick.services:6379'
+# CELERY_BROKER_URL = getenv("CELERY_BROKER_URL", "amqp://guest:guest@localhost:5672/")
+CELERY_RESULT_BACKEND = getenv("CELERY_RESULT_BACKEND", "redis://:S1t3k1ck!@prod-db-001.sitekick.services:6379/1")
+
 
 # Infrastructure
 # # Redis Cache
 CACHE_LOCATION = getenv("CACHE_LOCATION", "redis://:S1t3k1ck!@localhost:6379/0")
+CACHE_LOCATION = getenv("CACHE_LOCATION", "redis://:S1t3k1ck!@prod-db-001.sitekick.services:6379/1")
 
-# Check all connections
 
 # Infrastructure
 # # LDNS Dane / or ldns-dane-wrapper ('./ldns-dane-wrapper')
