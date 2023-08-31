@@ -471,6 +471,7 @@ def do_ns(self, url, *args, **kwargs):
     CDNs.
     """
     try:
+        log.debug(f"Starting do_ns self: {self}, url: {url}, args: {args}, kwargs: {kwargs}")
         domains = []
         score = scoring.IPV6_NS_CONN_FAIL
         rrset = self.resolve(url, RR_TYPE_NS)
@@ -604,7 +605,7 @@ def simhash(url, task=None):
 
 def do_web(self, url, *args, **kwargs):
     try:
-        log.debug("Performing IPv6 check")
+        log.debug(f"{self} Performing IPv6 check")
         domain = []
         simhash_score = scoring.WEB_IPV6_WS_SIMHASH_FAIL
         simhash_distance = SIMHASH_NOT_CALCULABLE
@@ -647,3 +648,4 @@ def do_web(self, url, *args, **kwargs):
             )
 
     return ("web", dict(domains=[domain], simhash_score=simhash_score, simhash_distance=simhash_distance, score=score))
+

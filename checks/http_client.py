@@ -28,12 +28,17 @@ def _do_request(args, headers, kwargs, session, url):
     following the redirect chain, then ensures response.history is complete.
     """
     user_allow_redirects = kwargs.pop("allow_redirects", True)
-    response = session.get(url, headers=headers, stream=True, allow_redirects=False, *args, **kwargs)
+    log.debug(f"==== _do_request {url} {headers} {session} {session.timeout} {args} {kwargs}")
+    response = session.get(url, headers=headers, stream=True, allow_redirects=False, timeout=DEFAULT_TIMEOUT,
+                           *args, **kwargs)
+    log.debug(f"==== _do_request response {response}")
     if response.next and user_allow_redirects:
+        log.debug(f"==== _do_request redirect {response.next.url} timeout: {session.timeout}")
         headers.pop("Host", None)
         initial_response = response
         response = session.get(
-            initial_response.next.url, headers=headers, stream=True, allow_redirects=True, *args, **kwargs
+            initial_response.next.url, headers=headers, stream=True, allow_redirects=True, timeout=DEFAULT_TIMEOUT,
+            *args, **kwargs
         )
         response.history.insert(0, initial_response)
 
@@ -55,6 +60,8 @@ def http_get(
     if not session:
         session = requests.session()
 
+    log.debug(f"==== http_get {url} {headers}")
+    session.timeout = kwargs.pop("timeout", DEFAULT_TIMEOUT)
     try:
         response = _do_request(args, headers, kwargs, session, url)
     except requests.RequestException:

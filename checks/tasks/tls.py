@@ -1191,29 +1191,39 @@ def dane(url, port, chain, task, dane_cb_data, score_none, score_none_bogus, sco
         chain_pem.append(cert.as_pem())
     chain_txt = "\n".join(chain_pem)
     res = None
-    with subprocess.Popen(
-        [
-            settings.LDNS_DANE,
-            "-c",
-            "/dev/stdin",  # Read certificate chain from stdin
-            "-n",  # Do not validate hostname
-            "-T",  # Exit status 2 for PKIX without (secure) TLSA records
-            "-f",
-            settings.CA_CERTIFICATES,  # CA file
-            "verify",
-            hostname,
-            str(port),
-        ],
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
-        stdin=subprocess.PIPE,
-        universal_newlines=True,
-    ) as proc:
-        try:
-            res = proc.communicate(input=chain_txt, timeout=10)
-        except subprocess.TimeoutExpired:
-            proc.kill()
-            res = proc.communicate()
+    try:
+        with subprocess.Popen(
+            [
+                settings.LDNS_DANE,
+                "-c",
+                "/dev/stdin",  # Read certificate chain from stdin
+                "-n",  # Do not validate hostname
+                "-T",  # Exit status 2 for PKIX without (secure) TLSA records
+                "-f",
+                settings.CA_CERTIFICATES,  # CA file
+                "verify",
+                hostname,
+                str(port),
+            ],
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            stdin=subprocess.PIPE,
+            universal_newlines=True,
+        ) as proc:
+            try:
+                res = proc.communicate(input=chain_txt, timeout=10)
+            except subprocess.TimeoutExpired:
+                proc.kill()
+                res = proc.communicate()
+    except OSError:
+        return dict(
+        dane_score=score_failed,
+        dane_status=DaneStatus.failed,
+        dane_log='',
+        dane_records=records,
+        dane_rollover=rollover,
+    )
+
 
     # status 0: DANE validate
     # status 1: ERROR
@@ -1611,6 +1621,7 @@ def do_web_cert(af_ip_pairs, url, task, *args, **kwargs):
     Check the web server's certificate.
 
     """
+    log.debug(f"==== do_web_cert: {url} ====")
     try:
         results = {}
         for af_ip_pair in af_ip_pairs:
@@ -1629,6 +1640,7 @@ def cert_checks(url, mode, task, af_ip_pair=None, starttls_details=None, *args, 
     Perform certificate checks.
 
     """
+    log.debug(f"==== cert_checks: {url} {task} {af_ip_pair} ====")
     try:
         # Generic arguments for web and mail.
         conn_wrapper_args = {
@@ -2970,12 +2982,15 @@ def forced_http_check(af_ip_pair, url, task):
     Check if the webserver is properly configured with HTTPS redirection.
     """
     # First connect on port 80 and see if we get refused
+    logger.debug("Checking if webserver %s:%s is properly configured with HTTPS redirection.", *af_ip_pair)
     try:
         http_get_ip(hostname=url, ip=af_ip_pair[1], port=443, https=True)
     except requests.RequestException:
         # No HTTPS connection available
+        logger.debug("No HTTPS connection available.")
         return scoring.WEB_TLS_FORCED_HTTPS_BAD, ForcedHttpsStatus.bad
 
+    logger.debug("HTTPS connection available.")
     try:
         response_http = http_get_ip(hostname=url, ip=af_ip_pair[1], port=80, https=False)
     except requests.RequestException:

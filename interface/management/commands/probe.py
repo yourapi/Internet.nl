@@ -112,3 +112,4 @@ def run_probe(probe: str, domain: str):
 
     log.info(f"Retrieved return value: {return_value}")
     log.info("Done")
+    return return_value

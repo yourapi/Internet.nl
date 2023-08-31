@@ -315,19 +315,19 @@ unbound-x86-3.8: .unbound-x86-3.8
 nassl: venv .nassl
 .nassl:
 	# This makes a complete new checkout and build of nassl with the internet.nl code.
-	rm -rf nassl_freebsd
-	GIT_LFS_SKIP_SMUDGE=1 git clone https://github.com/internetstandards/nassl.git nassl_freebsd --branch internetnl
-	#  cd nassl_freebsd && git checkout internetnl
-	cd nassl_freebsd && mkdir -p bin/openssl-legacy/freebsd64
-	cd nassl_freebsd && mkdir -p bin/openssl-modern/freebsd64
-	cd nassl_freebsd && wget https://zlib.net/zlib-1.2.13.tar.gz
-	cd nassl_freebsd && tar xvfz  zlib-1.2.13.tar.gz
-	cd nassl_freebsd && git clone https://github.com/PeterMosmans/openssl.git openssl-1.0.2e
-	# We generally follow 1.0.2-chacha branch, which moves little, but pinned to latest commit here for reproducibility
-	cd nassl_freebsd && cd openssl-1.0.2e; git checkout 08802aaaa43a43c3bffc0d7cba8aed013bd14a55; cd ..
-	cd nassl_freebsd && git clone https://github.com/openssl/openssl.git openssl-master
-	cd nassl_freebsd && cd openssl-master; git checkout OpenSSL_1_1_1c; cd ..
-	. .venv/bin/activate && cd nassl_freebsd && ${env} python3 build_from_scratch.py
+#	rm -rf nassl_freebsd
+#	GIT_LFS_SKIP_SMUDGE=1 git clone https://github.com/internetstandards/nassl.git nassl_freebsd --branch internetnl
+#	#  cd nassl_freebsd && git checkout internetnl
+#	cd nassl_freebsd && mkdir -p bin/openssl-legacy/freebsd64
+#	cd nassl_freebsd && mkdir -p bin/openssl-modern/freebsd64
+#	cd nassl_freebsd && wget https://zlib.net/zlib-1.3.tar.gz
+#	cd nassl_freebsd && tar xvfz  zlib-1.3.tar.gz
+#	cd nassl_freebsd && git clone https://github.com/PeterMosmans/openssl.git openssl-1.0.2e
+#	# We generally follow 1.0.2-chacha branch, which moves little, but pinned to latest commit here for reproducibility
+#	cd nassl_freebsd && cd openssl-1.0.2e; git checkout 08802aaaa43a43c3bffc0d7cba8aed013bd14a55; cd ..
+#	cd nassl_freebsd && git clone https://github.com/openssl/openssl.git openssl-master
+#	cd nassl_freebsd && cd openssl-master; git checkout OpenSSL_1_1_1c; cd ..
+#	. .venv/bin/activate && cd nassl_freebsd && ${env} python3 build_from_scratch.py
 	. .venv/bin/activate && cd nassl_freebsd && ${env} python3 setup.py install
 	touch .nassl
 

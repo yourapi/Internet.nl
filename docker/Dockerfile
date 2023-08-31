@@ -148,7 +148,7 @@ RUN chmod +x ${APP_PATH}/docker/postgres-ping.sh
 # Todo: this will currently not work on arm machines as somehow the build will still say arch -m64 during build.
 # RUN make nassl_complete
 RUN make unbound-3.7
-RUN make python-whois
+# RUN make python-whois
 
 # Cleanup temporary build files
 RUN rm -rf nassl_freebsd

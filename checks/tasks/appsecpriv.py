@@ -215,6 +215,7 @@ def build_summary_report(testappsecpriv, category):
 
 
 def do_web_appsecpriv(af_ip_pairs, url, task, *args, **kwargs):
+    log.debug(f"==== do_web_appsecpriv af_ip_pairs: {af_ip_pairs}, url: {url}")
     try:
         results = {}
         header_checkers = [
@@ -223,7 +224,9 @@ def do_web_appsecpriv(af_ip_pairs, url, task, *args, **kwargs):
             HeaderCheckerReferrerPolicy(),
             HeaderCheckerXContentTypeOptions(),
         ]
+        log.debug(f"==== af_ip_pairs: {af_ip_pairs}, url: {url}, header_checkers: {header_checkers}")
         for af_ip_pair in af_ip_pairs:
+            log.debug(f"==== af_ip_pair: {af_ip_pair}")
             results[af_ip_pair[1]] = http_headers_check(af_ip_pair, url, header_checkers, task)
             results[af_ip_pair[1]].update(securitytxt_check(af_ip_pair, url, task))
 

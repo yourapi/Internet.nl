@@ -147,6 +147,8 @@ def get_mail_servers_mxstatus(mailservers):
 def do_resolve_a_aaaa(self, qname, *args, **kwargs):
     """Resolve A and AAAA records and return a single result for each type."""
     af_ip_pairs = []
+    print('do_resolve_a_aaaa', self, qname)
+    print('self.resolve', self.resolve)
     ip4 = self.resolve(qname, unbound.RR_TYPE_A)
     if len(ip4) > 0:
         af_ip_pairs.append((socket.AF_INET, ip4[0]))

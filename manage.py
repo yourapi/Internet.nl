@@ -30,4 +30,5 @@ if __name__ == "__main__":
                 "forget to activate a virtual environment?"
             )
         raise
+    # execute_from_command_line('manage.py probe --probe=dnssec_web_is_secure --domain=internet.nl'.split())
     execute_from_command_line(sys.argv)

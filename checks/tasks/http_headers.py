@@ -718,8 +718,11 @@ def http_headers_check(af_ip_pair, domain, header_checkers, task):
     results = dict()
     # set defaults to positive values. Header tests return negative values if
     # a test failed.
+    import logging
+    logging.getLogger('internetnl').debug(f"==== Enter http_headers_check  {header_checkers}")
     for h in header_checkers:
         results.update(h.get_positive_values())
+    logging.getLogger('internetnl').debug(f"==== Default values: {results}")
 
     put_headers = {"Accept-Encoding": "compress, deflate, exi, gzip, pack200-gzip, x-compress, x-gzip"}
     try:

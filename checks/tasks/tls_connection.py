@@ -79,9 +79,13 @@ def sock_connect(host, ip, port, ipv6=False, task=None, timeout=DEFAULT_TIMEOUT)
         if task:
             ips = task.resolve(host, rr_type)
         else:
-            cb_data = ub_resolve_with_timeout(host, rr_type, unbound.RR_CLASS_IN, timeout)
-            af = socket.AF_INET6 if ipv6 else socket.AF_INET
-            ips = [socket.inet_ntop(af, rr) for rr in cb_data["data"].data]
+            try:
+                cb_data = ub_resolve_with_timeout(host, rr_type, unbound.RR_CLASS_IN, timeout)
+                af = socket.AF_INET6 if ipv6 else socket.AF_INET
+                ips = [socket.inet_ntop(af, rr) for rr in cb_data["data"].data]
+            except Exception as e:
+                print('==== tls_connection.sock_connect: ', e)
+                ips = []
         if not ips:
             raise NoIpError(f"Unable to resolve {rr_type} record for host '{host}'")
 
@@ -218,6 +222,7 @@ class ConnectionCommon:
                     f" to host '{self.server_name}'"
                     f" at IP:port {self.ip_address}:{self.port}"
                     f" using SSL version {self.version.name}"
+                    f" timeout {self.timeout}"
                     f" invoked by {inspect.stack()[4].function}"
                     f" > {inspect.stack()[5].function}"
                     f" > {inspect.stack()[6].function}"
