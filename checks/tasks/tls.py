@@ -1752,7 +1752,9 @@ def do_mail_smtp_starttls(mailservers, url, task, *args, **kwargs):
     test use those to avoid contacting well known mailservers all the time.
 
     """
+
     # Check for NULL MX and return immediately.
+    logger.debug(f"==== do_mail_smtp_starttls: {mailservers} {url} ====")
     mx_status = get_mail_servers_mxstatus(mailservers)
     if mx_status != MxStatus.has_mx:
         return ("smtp_starttls", {"mx_status": mx_status})

@@ -92,6 +92,7 @@ def count_score(result):
 pprint(count_score(result))
 
 update(result, p([k for k in PROBES if PROBES[k] and 'ipv6_ns' in k], 'belastingdienst.nl'))
+update(result, p([k for k in PROBES if PROBES[k] and 'tls_mail_smtp_starttls' in k], 'yourhosting.nl'))
 
 # update(result, p([k for k in PROBES if PROBES[k]], 'internet.nl'))
 

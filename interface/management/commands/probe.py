@@ -99,6 +99,7 @@ def run_probe(probe: str, domain: str):
         log.debug("First retrieving mailservers")
         mailservers = shared.mail_get_servers(domain)
         log.debug(f"Mailservers retrieved: {mailservers}")
+        log.debug(f"Probe: {PROBES[probe]}")
         return_value = PROBES[probe](mailservers, domain)
 
     elif probe in ["mail_rpki"]:
