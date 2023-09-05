@@ -1757,6 +1757,7 @@ def do_mail_smtp_starttls(mailservers, url, task, *args, **kwargs):
     if mx_status != MxStatus.has_mx:
         return ("smtp_starttls", {"mx_status": mx_status})
 
+    logger.debug(f"==== do_mail_smtp_starttls: {mailservers} {task} ====")
     results = {server: False for server, _, _ in mailservers}
     try:
         start = timer()
@@ -1767,13 +1768,16 @@ def do_mail_smtp_starttls(mailservers, url, task, *args, **kwargs):
 
         # Always try to get cached results (within the allowed time frame) to
         # avoid continuously testing popular mail hosting providers.
+        logger.debug('==== before redis_id.mail_starttls.ttl')
         cache_ttl = redis_id.mail_starttls.ttl
+        logger.debug(f'==== redis_id.mail_starttls.ttl {cache_ttl}')
         while timer() - start < cache_ttl and not all(results.values()) > 0:
             for server, dane_cb_data, _ in mailservers:
                 if results[server]:
                     continue
                 # Check if we already have cached results.
                 cache_id = redis_id.mail_starttls.id.format(server)
+                logger.debug(f'==== before cache.add {cache} - {cache_id}')
                 if cache.add(cache_id, False, cache_ttl):
                     # We do not have cached results, get them and cache them.
                     results[server] = check_mail_tls(server, dane_cb_data, task)

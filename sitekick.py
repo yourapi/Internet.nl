@@ -1,7 +1,9 @@
+import collections
 import datetime
 import json
 import os
 import sys
+from pprint import pprint
 
 from enumfields import Enum as LabelEnum
 from enum import Enum
@@ -13,6 +15,7 @@ from django.core.management import execute_from_command_line
 execute_from_command_line(['manage.py', 'probe', '--probe=ipv6_ns', '--domain=internet.nl'])
 # execute_from_command_line(['manage.py', 'probe', '--probe=tls_web_cert', '--domain=internet.nl'])
 from interface.management.commands.probe import run_probe, PROBES
+# PROBES = {}
 
 # from django_redis import get_redis_connection
 # print('==== ', get_redis_connection('default'))
@@ -61,9 +64,35 @@ def update(d, u):
     return d
 
 
-result = json.load(open('./data/probes.json'))
+try:
+    result = json.load(open('./data/probes.json'))
+except:
+    result = {}
 
-update(result, p([k for k in PROBES if PROBES[k] and 'ipv6' in k], 'sitekick.eu'))
+if not isinstance(result, dict):
+    result = {}
+
+def count_score(result):
+    score_by_domain = collections.Counter()
+    def add_scores(domain, tree, accu):
+        if isinstance(tree, list):
+            for item in tree:
+                add_scores(domain, item, accu)
+        elif isinstance(tree, dict):
+            if 'score' in tree:
+                # if tree.get('score') and tree.get('status'):
+                accu[domain] += tree['score']
+            else:
+                for v in tree.values():
+                    add_scores(domain, v, accu)
+    for domain, scores in result.items():
+        add_scores(domain, scores, score_by_domain)
+    return score_by_domain
+
+pprint(count_score(result))
+
+update(result, p([k for k in PROBES if PROBES[k] and 'ipv6_ns' in k], 'belastingdienst.nl'))
+
 # update(result, p([k for k in PROBES if PROBES[k]], 'internet.nl'))
 
 # update(result, p([k for k in PROBES if PROBES[k] and any(label in k for label in
