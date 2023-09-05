@@ -82,10 +82,12 @@ def sock_connect(host, ip, port, ipv6=False, task=None, timeout=DEFAULT_TIMEOUT)
             sslConnectLogger.debug("==== {ips}")
         else:
             try:
-                sslConnectLogger.debug("==== {host, rr_type, unbound.RR_CLASS_IN, timeout}")
+                sslConnectLogger.debug(f"==== {host, rr_type, unbound.RR_CLASS_IN, timeout}")
                 cb_data = ub_resolve_with_timeout(host, rr_type, unbound.RR_CLASS_IN, timeout)
                 af = socket.AF_INET6 if ipv6 else socket.AF_INET
+                sslConnectLogger.debug(f"==== {cb_data, af}")
                 ips = [socket.inet_ntop(af, rr) for rr in cb_data["data"].data]
+                sslConnectLogger.debug(f"==== {ips}")
             except Exception as e:
                 print('==== tls_connection.sock_connect: ', e)
                 ips = []
