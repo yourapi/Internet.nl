@@ -77,9 +77,12 @@ def sock_connect(host, ip, port, ipv6=False, task=None, timeout=DEFAULT_TIMEOUT)
         rr_type = unbound.RR_TYPE_AAAA if ipv6 else unbound.RR_TYPE_A
         task = task if task else celery_app.current_worker_task
         if task:
+            sslConnectLogger.debug("==== {task} {host} {rr_type} {timeout}")
             ips = task.resolve(host, rr_type)
+            sslConnectLogger.debug("==== {ips}")
         else:
             try:
+                sslConnectLogger.debug("==== {host, rr_type, unbound.RR_CLASS_IN, timeout}")
                 cb_data = ub_resolve_with_timeout(host, rr_type, unbound.RR_CLASS_IN, timeout)
                 af = socket.AF_INET6 if ipv6 else socket.AF_INET
                 ips = [socket.inet_ntop(af, rr) for rr in cb_data["data"].data]
