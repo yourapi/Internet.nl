@@ -76,7 +76,7 @@ CELERY_BROKER_URL = getenv("CELERY_BROKER_URL", "amqp://guest:guest@localhost:56
 CELERY_RESULT_BACKEND = getenv("CELERY_RESULT_BACKEND", "redis://:S1t3k1ck!@localhost:6379/0")
 
 # Sitekick 'S1t3k1ck!@prod-db-001.sitekick.services:6379'
-# CELERY_BROKER_URL = getenv("CELERY_BROKER_URL", "amqp://guest:guest@localhost:5672/")
+CELERY_BROKER_URL = getenv("CELERY_BROKER_URL", "amqps://fvznmeub:3vLn_VCM1RvibAeReXAOrhJvceHN0x6J@kangaroo.rmq.cloudamqp.com/fvznmeub")
 CELERY_RESULT_BACKEND = getenv("CELERY_RESULT_BACKEND", "redis://:S1t3k1ck!@prod-db-001.sitekick.services:6379/1")
 
 
