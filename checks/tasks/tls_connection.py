@@ -227,9 +227,14 @@ class ConnectionCommon:
                     f" > {inspect.stack()[5].function}"
                     f" > {inspect.stack()[6].function}"
                 )
+                sslConnectLogger.debug("==== "
+                f"{self.server_name, self.ip_address, self.port, self.ipv6, self.task, self.timeout}"
+            )
             (self.ip_address, self.sock) = sock_connect(
                 self.server_name, self.ip_address, self.port, self.ipv6, self.task, self.timeout
             )
+            sslConnectLogger.debug("==== "
+                                   f"{self.ip_address, self.sock}"
         except (OSError, NoIpError):
             if not (any_af or self.ip_address):
                 raise

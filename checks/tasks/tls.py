@@ -573,6 +573,7 @@ def batch_web_conn(self, af_ip_pairs, url, *args, **kwargs):
     base=SetupUnboundContext,
 )
 def mail_smtp_starttls(self, mailservers, url, *args, **kwargs):
+    log.debug("==== @shared_taskmail_smtp_starttls")
     return do_mail_smtp_starttls(mailservers, url, self, *args, **kwargs)
 
 
