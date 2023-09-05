@@ -89,7 +89,7 @@ def sock_connect(host, ip, port, ipv6=False, task=None, timeout=DEFAULT_TIMEOUT)
                 ips = [socket.inet_ntop(af, rr) for rr in cb_data["data"].data]
                 sslConnectLogger.debug(f"==== {ips}")
             except Exception as e:
-                print('==== tls_connection.sock_connect: ', e)
+                sslConnectLogger.debug(f'==== tls_connection.sock_connect: {e}')
                 ips = []
         if not ips:
             raise NoIpError(f"Unable to resolve {rr_type} record for host '{host}'")
@@ -98,10 +98,13 @@ def sock_connect(host, ip, port, ipv6=False, task=None, timeout=DEFAULT_TIMEOUT)
     # successfully connect to.
     af = socket.AF_INET6 if ipv6 else socket.AF_INET
     for this_ip in ips:
+        sslConnectLogger.debug(f"==== {this_ip, port}")
         try:
+            sslConnectLogger.debug(f"==== {af, socket.SOCK_STREAM, timeout}")
             s = socket.socket(af, socket.SOCK_STREAM, 0)
             s.settimeout(timeout)
             s.connect((this_ip, port))
+            sslConnectLogger.debug(f"==== {af, socket.SOCK_STREAM, timeout}")
             return (this_ip, s)
         except OSError as e:
             if s:
