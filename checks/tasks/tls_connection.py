@@ -234,7 +234,7 @@ class ConnectionCommon:
                 self.server_name, self.ip_address, self.port, self.ipv6, self.task, self.timeout
             )
             sslConnectLogger.debug("==== "
-                                   f"{self.ip_address, self.sock}"
+                                   f"{self.ip_address, self.sock}")
         except (OSError, NoIpError):
             if not (any_af or self.ip_address):
                 raise
