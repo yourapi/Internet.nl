@@ -64,6 +64,9 @@ def probe(probes=None, domains: list = None):
         domain = domain.strip().lower()
         for p in probes:
             result.setdefault(domain, {})[p] = ensure_key_str(transform_probe_result(run_probe(p, domain)))
+    print('=' * 120)
+    pprint(result)
+    print('=' * 120)
     return result
 
 
