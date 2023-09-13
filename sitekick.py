@@ -55,6 +55,19 @@ def transform_probe_result(result):
             return list(result[1:])
     return result
 
+def transform_rpki_web(result: dict) -> dict:
+    """The rpki returns the result as a list with ip-addresses, instead of a dictionary. Correct this by retrieving
+    the ip-addresses from the list."""
+    if len(result) != 1:
+        return result
+    # Single result; get the value, which is a list:
+    values = list(result.values())[0]
+    if not isinstance(values, list):
+        return result
+    # The list contains tuples with ip-addresses and a dictionary with the result:
+    return {e.get('ip'): {k:v for k,v in e.items() if k != 'ip'} for e in values}
+
+
 def probe(probes=None, domains: list = None):
     result = {}
     if not (probes and domains):
@@ -67,6 +80,9 @@ def probe(probes=None, domains: list = None):
         domain = domain.strip().lower()
         for p in probes:
             result.setdefault(domain, {})[p] = ensure_key_str(transform_probe_result(run_probe(p, domain)))
+            if p == 'web_rpki':
+                # Hm, not very elegant; have to refactor later :-((
+                result[domain][p] = transform_rpki_web(result[domain][p])
     print('=' * 120)
     pprint(result)
     print('=' * 120)
