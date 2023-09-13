@@ -67,7 +67,10 @@ def probe(probes=None, domains: list = None):
     print('=' * 120)
     pprint(result)
     print('=' * 120)
-    return result
+    if len(domains) > 1:
+        return result
+    else:
+        return result[domains[0]]
 
 
 def json_default(obj):
