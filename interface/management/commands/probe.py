@@ -111,6 +111,6 @@ def run_probe(probe: str, domain: str):
     else:
         return_value = PROBES[probe](domain)
 
-    log.info(f"Retrieved return value: {return_value}")
-    log.info("Done")
+    # log.info(f"Retrieved return value: {return_value}")
+    # log.info("Done")
     return return_value

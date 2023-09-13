@@ -613,7 +613,8 @@ CLIENT_RATE_LIMIT = 30
 
 # --- Routinator settings
 #
-ROUTINATOR_URL = getenv("ROUTINATOR_URL", "http://localhost:9556/api/v1/validity")
+# ROUTINATOR_URL = getenv("ROUTINATOR_URL", "http://localhost:9556/api/v1/validity")
+ROUTINATOR_URL = getenv("ROUTINATOR_URL", "http://localhost:8323/api/v1/validity")
 
 
 # Sentry reads SENTRY_DSN directly from environment

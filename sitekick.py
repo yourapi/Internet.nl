@@ -89,19 +89,33 @@ def count_score(result):
         add_scores(domain, scores, score_by_domain)
     return score_by_domain
 
+def main_keys(result: dict) -> list:
+    """Get the keys from the second level and return in a sorted list."""
+    return sorted(set(k for v in result.values() for k in v.keys()))
+
 pprint(count_score(result))
+pprint(main_keys(result))
 
-update(result, p([k for k in PROBES if PROBES[k] and 'ipv6_ns' in k], 'belastingdienst.nl'))
-update(result, p([k for k in PROBES if PROBES[k] and 'tls_mail_smtp_starttls' in k], 'yourhosting.nl'))
 
-# update(result, p([k for k in PROBES if PROBES[k]], 'internet.nl'))
+run_probe('ipv6_web', 'belastingdienst.nl')
+# update(result, p([k for k in PROBES if PROBES[k] and 'ipv6_ns' in k], 'belastingdienst.nl'))
+# update(result, p([k for k in PROBES if PROBES[k] and 'tls_mail_smtp_starttls' in k], 'yourhosting.nl'))
+web_checks = [k for k in PROBES if PROBES[k] and any(label in k for label in ['web', 'ipv6_ns'])]
+mail_checks = [k for k in PROBES if PROBES[k] and any(label in k for label in ['mail']) and not 'shared' in k]
+
+result1 = {}
+update(result1, p(web_checks, ['internet.nl', 'remedu.nl', 'sitekick.eu', 'belastingdienst.nl']))
+p(['web_rpki'], ['internet.nl', 'remedu.nl', 'sitekick.eu', 'belastingdienst.nl'])
+p(['web_rpki'], ['internet.nl'])
 
 # update(result, p([k for k in PROBES if PROBES[k] and any(label in k for label in
 #                                                         ['dnssec', 'rpki', 'tls', 'ipv6', 'appsecpriv'])],
 #                 'sitekick.eu'))
 # update(result, p([k for k in PROBES if PROBES[k]], 'google.com'))
-update(result,
+update(result1,
+       p(web_checks, ['yourhosting.nl', 'nu.nl', 'rabobank.nl', 'belastingdienst.nl', 'xxx.com']))
+result1 = {}
+update(result1,
        p([k for k in PROBES if PROBES[k]], ['yourhosting.nl', 'nu.nl', 'rabobank.nl', 'belastingdienst.nl', 'xxx.com']))
-# update(result, p([k for k in PROBES if PROBES[k] and 'tls_mail_smtp_starttls' in k], ['yourhosting.nl', 'nu.nl', 'rabobank.nl','belastingdienst.nl', 'xxx.com'][2:3]))
 
-open('./data/probes.json', 'w').write(json.dumps(result, default=json_default, indent=4))
+open('./data/probes-web.json', 'w').write(json.dumps(result1, default=json_default, indent=4))

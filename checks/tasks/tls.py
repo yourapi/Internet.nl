@@ -1758,6 +1758,7 @@ def do_mail_smtp_starttls(mailservers, url, task, *args, **kwargs):
     logger.debug(f"==== do_mail_smtp_starttls: {mailservers} {url} ====")
     mx_status = get_mail_servers_mxstatus(mailservers)
     if mx_status != MxStatus.has_mx:
+        logger.debug(f"==== mx_status != MxStatus.has_mx {mx_status != MxStatus.has_mx}")
         return ("smtp_starttls", {"mx_status": mx_status})
 
     logger.debug(f"==== do_mail_smtp_starttls: {mailservers} {task} ====")
