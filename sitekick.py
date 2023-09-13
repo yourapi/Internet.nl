@@ -6,7 +6,6 @@ import os
 import sys
 
 from pprint import pprint
-from types import NoneType
 
 from enumfields import Enum as LabelEnum
 from enum import Enum
@@ -32,7 +31,9 @@ def ensure_key_str(d: dict) -> dict:
     def to_key(key):
         if isinstance(key, Enum):
             return key.name
-        elif isinstance(key, (str, int, float, bool, NoneType)):
+        elif isinstance(key, (str, int, float, bool)):
+            return key
+        elif key is None:
             return key
         else:
             return str(key)
