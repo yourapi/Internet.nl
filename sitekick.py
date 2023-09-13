@@ -6,6 +6,7 @@ import os
 import sys
 
 from pprint import pprint
+from types import NoneType
 
 from enumfields import Enum as LabelEnum
 from enum import Enum
@@ -25,6 +26,19 @@ from interface.management.commands.probe import run_probe, PROBES
 web_checks = [k for k in PROBES if PROBES[k] and any(label in k for label in ['web', 'ipv6_ns'])]
 mail_checks = [k for k in PROBES if PROBES[k] and any(label in k for label in ['mail']) and not 'shared' in k]
 
+
+def ensure_key_str(d: dict) -> dict:
+    """Ensure that all keys in the dictionary are strings, recursively."""
+    def to_key(key):
+        if isinstance(key, Enum):
+            return key.name
+        elif isinstance(key, (str, int, float, bool, NoneType)):
+            return key
+        else:
+            return str(key)
+    if not isinstance(d, dict):
+        return d
+    return {to_key(k): v for k, v in d.items()}
 
 def transform_probe_result(result):
     """Based on the name of the probe, transform the result to a more readable format."""
@@ -48,7 +62,7 @@ def probe(probes=None, domains: list = None):
     for domain in domains:
         domain = domain.strip().lower()
         for p in probes:
-            result.setdefault(domain, {})[p] = transform_probe_result(run_probe(p, domain))
+            result.setdefault(domain, {})[p] = ensure_key_str(transform_probe_result(run_probe(p, domain)))
     return result
 
 
