@@ -39,7 +39,7 @@ def ensure_key_str(d: dict) -> dict:
             return str(key)
     if not isinstance(d, dict):
         return d
-    return {to_key(k): v for k, v in d.items()}
+    return {to_key(k): ensure_key_str(v) for k, v in d.items()}
 
 def transform_probe_result(result):
     """Based on the name of the probe, transform the result to a more readable format."""
