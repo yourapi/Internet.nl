@@ -119,9 +119,18 @@ def tes():
 
     open('./data/probes-web.json', 'w').write(json.dumps(result1, default=json_default, indent=4))
 
+
+from .json_sk import JSONEncoder
+
 from flask import Flask
 app = Flask(__name__)
+app.json_encoder = JSONEncoder
 
 @app.route('/web/<domain>')
 def probe_web(domain):
     return probe(web_checks, domain)
+
+
+@app.route('/probe/<probe>/<domain>')
+def probe_probe(probe, domain):
+    return probe(probe, domain)
