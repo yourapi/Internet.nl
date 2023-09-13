@@ -31,6 +31,18 @@ for k, v in PROBES.items():
     probes.setdefault(mod, {})[name] = k
 
 
+
+def transform_probe_result(result):
+    """Based on the name of the probe, transform the result to a more readable format."""
+    if isinstance(result, tuple) and len(result) > 1 and isinstance(result[0], str):
+        if len(result) == 2:
+            # probe name followed by result
+            return result[-1]
+        else:
+            # probe name followed by multiple results:
+            return list(result[1:])
+    return result
+
 def p(probes=probes, domains=domain):
     result = {}
     if not isinstance(domains, (list, tuple)):
@@ -39,7 +51,7 @@ def p(probes=probes, domains=domain):
         probes = [probes]
     for domain in domains:
         for p in probes:
-            result.setdefault(domain, {})[p] = run_probe(p, domain)
+            result.setdefault(domain, {})[p] = transform_probe_result(run_probe(p, domain))
     return result
 
 
@@ -93,29 +105,29 @@ def main_keys(result: dict) -> list:
     """Get the keys from the second level and return in a sorted list."""
     return sorted(set(k for v in result.values() for k in v.keys()))
 
-pprint(count_score(result))
-pprint(main_keys(result))
+def tes():
+    pprint(count_score(result))
+    pprint(main_keys(result))
 
 
-run_probe('ipv6_web', 'belastingdienst.nl')
-# update(result, p([k for k in PROBES if PROBES[k] and 'ipv6_ns' in k], 'belastingdienst.nl'))
-# update(result, p([k for k in PROBES if PROBES[k] and 'tls_mail_smtp_starttls' in k], 'yourhosting.nl'))
-web_checks = [k for k in PROBES if PROBES[k] and any(label in k for label in ['web', 'ipv6_ns'])]
-mail_checks = [k for k in PROBES if PROBES[k] and any(label in k for label in ['mail']) and not 'shared' in k]
+    run_probe('ipv6_web', 'belastingdienst.nl')
+    # update(result, p([k for k in PROBES if PROBES[k] and 'ipv6_ns' in k], 'belastingdienst.nl'))
+    # update(result, p([k for k in PROBES if PROBES[k] and 'tls_mail_smtp_starttls' in k], 'yourhosting.nl'))
+    web_checks = [k for k in PROBES if PROBES[k] and any(label in k for label in ['web', 'ipv6_ns'])]
+    mail_checks = [k for k in PROBES if PROBES[k] and any(label in k for label in ['mail']) and not 'shared' in k]
 
-result1 = {}
-update(result1, p(web_checks, ['internet.nl', 'remedu.nl', 'sitekick.eu', 'belastingdienst.nl']))
-p(['web_rpki'], ['internet.nl', 'remedu.nl', 'sitekick.eu', 'belastingdienst.nl'])
-p(['web_rpki'], ['internet.nl'])
+    result1 = {}
+    # update(result1, p(web_checks, ['internet.nl', 'remedu.nl', 'sitekick.eu', 'belastingdienst.nl', 'yourhosting.nl']))
+    update(result1, p(web_checks, ['remedu.nl']))
+    p(['web_rpki'], ['internet.nl', 'remedu.nl', 'sitekick.eu', 'belastingdienst.nl'])
+    p(['web_rpki'], ['internet.nl'])
 
-# update(result, p([k for k in PROBES if PROBES[k] and any(label in k for label in
-#                                                         ['dnssec', 'rpki', 'tls', 'ipv6', 'appsecpriv'])],
-#                 'sitekick.eu'))
-# update(result, p([k for k in PROBES if PROBES[k]], 'google.com'))
-update(result1,
-       p(web_checks, ['yourhosting.nl', 'nu.nl', 'rabobank.nl', 'belastingdienst.nl', 'xxx.com']))
-result1 = {}
-update(result1,
-       p([k for k in PROBES if PROBES[k]], ['yourhosting.nl', 'nu.nl', 'rabobank.nl', 'belastingdienst.nl', 'xxx.com']))
 
-open('./data/probes-web.json', 'w').write(json.dumps(result1, default=json_default, indent=4))
+    open('./data/probes-web.json', 'w').write(json.dumps(result1, default=json_default, indent=4))
+
+from flask import Flask
+app = Flask(__name__)
+
+@app.route('/')
+def hello_world():
+    return 'Hello, World!'
