@@ -1,8 +1,10 @@
 import collections
+import collections.abc
 import datetime
 import json
 import os
 import sys
+
 from pprint import pprint
 
 from enumfields import Enum as LabelEnum
@@ -20,16 +22,8 @@ from interface.management.commands.probe import run_probe, PROBES
 # from django_redis import get_redis_connection
 # print('==== ', get_redis_connection('default'))
 
-domain = 'internet.nl'
-probes = {}
-
-# Group the calls to check all modules
-for k, v in PROBES.items():
-    if v is None:
-        continue
-    mod, name = v.name.split('.')[-2:]
-    probes.setdefault(mod, {})[name] = k
-
+web_checks = [k for k in PROBES if PROBES[k] and any(label in k for label in ['web', 'ipv6_ns'])]
+mail_checks = [k for k in PROBES if PROBES[k] and any(label in k for label in ['mail']) and not 'shared' in k]
 
 
 def transform_probe_result(result):
@@ -43,13 +37,16 @@ def transform_probe_result(result):
             return list(result[1:])
     return result
 
-def p(probes=probes, domains=domain):
+def probe(probes=None, domains: list = None):
     result = {}
-    if not isinstance(domains, (list, tuple)):
+    if not (probes and domains):
+        return result
+    if isinstance(domains, str):
         domains = [domains]
-    if not isinstance(probes, (list, tuple)):
+    if isinstance(probes, str):
         probes = [probes]
     for domain in domains:
+        domain = domain.strip().lower()
         for p in probes:
             result.setdefault(domain, {})[p] = transform_probe_result(run_probe(p, domain))
     return result
@@ -62,9 +59,6 @@ def json_default(obj):
         return f"{obj.__class__.__name__}.{obj.name}: {obj.value}"
     else:
         return str(obj)
-
-
-import collections.abc
 
 
 def update(d, u):
@@ -118,9 +112,9 @@ def tes():
 
     result1 = {}
     # update(result1, p(web_checks, ['internet.nl', 'remedu.nl', 'sitekick.eu', 'belastingdienst.nl', 'yourhosting.nl']))
-    update(result1, p(web_checks, ['remedu.nl']))
-    p(['web_rpki'], ['internet.nl', 'remedu.nl', 'sitekick.eu', 'belastingdienst.nl'])
-    p(['web_rpki'], ['internet.nl'])
+    update(result1, probe(web_checks, ['remedu.nl']))
+    probe(['web_rpki'], ['internet.nl', 'remedu.nl', 'sitekick.eu', 'belastingdienst.nl'])
+    probe(['web_rpki'], ['internet.nl'])
 
 
     open('./data/probes-web.json', 'w').write(json.dumps(result1, default=json_default, indent=4))
@@ -128,6 +122,6 @@ def tes():
 from flask import Flask
 app = Flask(__name__)
 
-@app.route('/')
-def hello_world():
-    return 'Hello, World!'
+@app.route('/web/<domain>')
+def probe_web(domain):
+    return probe(web_checks, domain)
