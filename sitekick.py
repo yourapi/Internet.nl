@@ -131,6 +131,6 @@ def probe_web(domain):
     return probe(web_checks, domain)
 
 
-@app.route('/probe/<probe>/<domain>')
+@app.route('/probe/<probe_name>/<domain>')
 def probe_probe(probe_name, domain):
     return probe(probe_name, domain)
