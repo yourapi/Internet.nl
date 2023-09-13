@@ -26,8 +26,8 @@ web_checks = [k for k in PROBES if PROBES[k] and any(label in k for label in ['w
 mail_checks = [k for k in PROBES if PROBES[k] and any(label in k for label in ['mail']) and not 'shared' in k]
 
 
-def ensure_key_str(d: dict) -> dict:
-    """Ensure that all keys in the dictionary are strings, recursively."""
+def ensure_key_str(o: object) -> object:
+    """Ensure that all keys in a dictionary are strings, recursively."""
     def to_key(key):
         if isinstance(key, Enum):
             return key.name
@@ -37,9 +37,12 @@ def ensure_key_str(d: dict) -> dict:
             return key
         else:
             return str(key)
-    if not isinstance(d, dict):
-        return d
-    return {to_key(k): ensure_key_str(v) for k, v in d.items()}
+    if isinstance(o, dict):
+        return {to_key(k): ensure_key_str(v) for k, v in o.items()}
+    elif isinstance(o, (list, tuple, set)):
+        return type(o)(ensure_key_str(e) for e in o)
+    else:
+        return o
 
 def transform_probe_result(result):
     """Based on the name of the probe, transform the result to a more readable format."""
