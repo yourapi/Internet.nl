@@ -27,8 +27,15 @@ OPTIONAL_SCORES = {'http_compression_score', 'client_reneg_score', 'ocsp_staplin
 RECOMMENDED_SCORES = {'kex_hash_func_score', 'dane_score', 'x_content_type_options_score',
                       'content_security_policy_score', 'referrer_policy_score', 'securitytxt_score'}
 # Literal copy from okapi.framework yourapi/plugins/internet/website/audit/helpers.py
+core_web_probes = (
+            ('ipv6', ('ipv6_ns', 'ipv6_web')),
+            ('https', ('tls_web_http', 'tls_web_conn', 'tls_web_cert')),
+            ('dnssec', ('dnssec_web_is_secure',))
+    )
+# Literal copy from okapi.framework yourapi/plugins/internet/website/audit/helpers.py
 
-web_checks = [k for k in PROBES if PROBES[k] and any(label in k for label in {'web', 'ipv6_ns'}) and k not in OPTIONAL_SCORES | RECOMMENDED_SCORES]
+
+web_checks = [k for k in PROBES if PROBES[k] and any(k in probes[1] for probes in core_web_probes)]
 mail_checks = [k for k in PROBES if PROBES[k] and any(label in k for label in ['mail']) and not 'shared' in k and k not in OPTIONAL_SCORES | RECOMMENDED_SCORES]
 
 
