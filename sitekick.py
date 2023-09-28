@@ -22,8 +22,14 @@ from interface.management.commands.probe import run_probe, PROBES
 # from django_redis import get_redis_connection
 # print('==== ', get_redis_connection('default'))
 
-web_checks = [k for k in PROBES if PROBES[k] and any(label in k for label in ['web', 'ipv6_ns'])]
-mail_checks = [k for k in PROBES if PROBES[k] and any(label in k for label in ['mail']) and not 'shared' in k]
+OPTIONAL_SCORES = {'http_compression_score', 'client_reneg_score', 'ocsp_stapling_score',
+                   'dane_status', 'x_frame_options_score', 'securitytxt_score'}
+RECOMMENDED_SCORES = {'kex_hash_func_score', 'dane_score', 'x_content_type_options_score',
+                      'content_security_policy_score', 'referrer_policy_score', 'securitytxt_score'}
+# Literal copy from okapi.framework yourapi/plugins/internet/website/audit/helpers.py
+
+web_checks = [k for k in PROBES if PROBES[k] and any(label in k for label in {'web', 'ipv6_ns'}) and k not in OPTIONAL_SCORES | RECOMMENDED_SCORES]
+mail_checks = [k for k in PROBES if PROBES[k] and any(label in k for label in ['mail']) and not 'shared' in k and k not in OPTIONAL_SCORES | RECOMMENDED_SCORES]
 
 
 def ensure_key_str(o: object) -> object:
