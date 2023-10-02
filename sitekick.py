@@ -2,6 +2,7 @@ import collections
 import collections.abc
 import datetime
 import json
+import logging
 import os
 import sys
 
@@ -71,6 +72,7 @@ def transform_probe_result(result):
 def transform_rpki_web(result: dict) -> dict:
     """The rpki returns the result as a list with ip-addresses, instead of a dictionary. Correct this by retrieving
     the ip-addresses from the list."""
+    logging.getLogger(__name__).info(f"Transforming rpki result {result}.")
     if len(result) != 1:
         return result
     # Single result; get the value, which is a list:
@@ -89,11 +91,13 @@ def probe(probes=None, domains: list = None):
         domains = [domains]
     if isinstance(probes, str):
         probes = [probes]
+    logging.getLogger(__name__).info(f"Performing {probes} on {domains}.")
     for domain in domains:
         domain = domain.strip().lower()
         for p in probes:
             result.setdefault(domain, {})[p] = ensure_key_str(transform_probe_result(run_probe(p, domain)))
             if p == 'web_rpki':
+                logging.getLogger(__name__).info(f"Performing {p} on {domain}.")
                 # Hm, not very elegant; have to refactor later :-((
                 result[domain][p] = transform_rpki_web(result[domain][p])
     print('=' * 120)
